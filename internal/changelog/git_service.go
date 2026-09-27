@@ -26,3 +26,15 @@ func (g GitServcie) CurrentBranch() (string, error) {
 
 	return strings.TrimSpace(string(output)), nil
 }
+
+func (g GitServcie) AuthorName() (string, error) {
+	cmd := exec.Command("git", "config", "user.name")
+	cmd.Dir = g.workingDir
+
+	output, err := cmd.Output()
+	if err != nil {
+		return "", err
+	}
+
+	return strings.TrimSpace(string(output)), nil
+}

@@ -47,18 +47,16 @@ func ResolveAuthor(sources []AuthorSource) (Author, error) {
 		}
 
 		author, err := src.GetAuthor()
-		if err != nil {
-			errs = append(errs, fmt.Errorf("author source %T: %w", src, err))
+
+		if err == nil {
+			return author, nil
+		}
+
+		if errors.Is(err, ErrAuthorNameMissing) {
 			continue
 		}
 
-		author, err = NewAuthor(author.Name, author.URL)
-		if err != nil {
-			errs = append(errs, fmt.Errorf("author source %T: %w", src, err))
-			continue
-		}
-
-		return author, nil
+		errs = append(errs, fmt.Errorf("author source %T: %w", src, err))
 	}
 
 	if len(errs) > 0 {
@@ -74,17 +72,19 @@ func (a *Author) normalize() {
 }
 
 func (a Author) validate() error {
+	var errs []error
+
 	if a.Name == "" {
-		return ErrAuthorNameMissing
+		errs = append(errs, ErrAuthorNameMissing)
 	}
 
 	if a.URL == "" {
-		return nil
+		return errors.Join(errs...)
 	}
 
 	if err := validation.ValidateURL(a.URL); err != nil {
-		return ErrAuthorURLInvalid
+		errs = append(errs, ErrAuthorURLInvalid)
 	}
 
-	return nil
+	return errors.Join(errs...)
 }

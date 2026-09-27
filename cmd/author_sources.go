@@ -2,39 +2,43 @@ package cmd
 
 import (
 	"github.com/hettiger/clg/internal/changelog"
-	"github.com/hettiger/clg/internal/config"
 )
 
-type AuthorSourceConfig struct {
-	changelog.Author
+type authorSourceFlags struct {
+	name string
+	url  string
 }
 
-func NewAuthorSourceConfig(c config.Config) AuthorSourceConfig {
-	return AuthorSourceConfig{
-		changelog.Author{
-			Name: c.Author.Name,
-			URL:  c.Author.URL,
-		},
+func newAuthorSourceFlags(name, url string) authorSourceFlags {
+	return authorSourceFlags{
+		name: name,
+		url:  url,
 	}
 }
 
-func (s AuthorSourceConfig) GetAuthor() (changelog.Author, error) {
-	return changelog.NewAuthor(s.Name, s.URL)
+func (s authorSourceFlags) GetAuthor() (changelog.Author, error) {
+	return changelog.NewAuthor(s.name, s.url)
 }
 
-type AuthorSourceFlags struct {
-	changelog.Author
+type gitAuthorNameReader interface {
+	AuthorName() (string, error)
 }
 
-func NewAuthorSourceFlags(name, url string) AuthorSourceFlags {
-	return AuthorSourceFlags{
-		changelog.Author{
-			Name: name,
-			URL:  url,
-		},
+type authorSourceGit struct {
+	gitService gitAuthorNameReader
+}
+
+func newAuthorSourceGit(gitService gitAuthorNameReader) authorSourceGit {
+	return authorSourceGit{
+		gitService: gitService,
 	}
 }
 
-func (s AuthorSourceFlags) GetAuthor() (changelog.Author, error) {
-	return changelog.NewAuthor(s.Name, s.URL)
+func (s authorSourceGit) GetAuthor() (changelog.Author, error) {
+	name, err := s.gitService.AuthorName()
+	if err != nil {
+		return changelog.Author{}, err
+	}
+
+	return changelog.NewAuthor(name, "")
 }

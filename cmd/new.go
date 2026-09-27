@@ -145,8 +145,8 @@ func addChangelogEntry(app *App, cmd *cobra.Command, state *newCmdState) error {
 	}
 
 	author, err := changelog.ResolveAuthor([]changelog.AuthorSource{
-		NewAuthorSourceFlags(state.authorName, state.authorURL),
-		NewAuthorSourceConfig(app.config),
+		newAuthorSourceFlags(state.authorName, state.authorURL),
+		newAuthorSourceGit(app.gitService),
 	})
 	if err != nil {
 		switch {
