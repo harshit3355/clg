@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -16,6 +17,8 @@ type newCmdState struct {
 	changeGroup string
 	changeType  string
 	message     string
+	authorName  string
+	authorURL   string
 }
 
 func NewNewCmd(app *App) *cobra.Command {
@@ -51,6 +54,9 @@ func NewNewCmd(app *App) *cobra.Command {
 	)
 
 	newCmd.Flags().StringVarP(&state.message, "message", "m", "", "changelog entry")
+
+	newCmd.Flags().StringVarP(&state.authorName, "author", "a", app.config.Author.Name, "author name")
+	newCmd.Flags().StringVarP(&state.authorURL, "url", "u", app.config.Author.URL, "author URL")
 
 	return newCmd
 }
@@ -138,11 +144,29 @@ func addChangelogEntry(app *App, cmd *cobra.Command, state *newCmdState) error {
 		return err
 	}
 
+	author, err := changelog.ResolveAuthor([]changelog.AuthorSource{
+		NewAuthorSourceFlags(state.authorName, state.authorURL),
+		NewAuthorSourceConfig(app.config),
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, changelog.ErrAuthorURLInvalid):
+			return err
+
+		default:
+			// ignore
+		}
+	}
+
 	changelogEntry := changelog.ChangelogEntry{
 		Group:  state.changeGroup,
 		Type:   state.changeType,
 		Title:  state.message,
 		Branch: branch,
+		Author: changelog.ChangelogEntryAuthor{
+			Name: author.Name,
+			URL:  author.URL,
+		},
 	}
 	path, err := app.entryStore.Write(changelogEntry)
 	if err != nil {
