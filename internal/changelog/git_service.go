@@ -5,17 +5,17 @@ import (
 	"strings"
 )
 
-type GitServcie struct {
+type GitService struct {
 	workingDir string
 }
 
-func NewGitService(workingDir string) GitServcie {
-	return GitServcie{
+func NewGitService(workingDir string) GitService {
+	return GitService{
 		workingDir: workingDir,
 	}
 }
 
-func (g GitServcie) CurrentBranch() (string, error) {
+func (g GitService) CurrentBranch() (string, error) {
 	cmd := exec.Command("git", "branch", "--show-current")
 	cmd.Dir = g.workingDir
 
@@ -27,7 +27,7 @@ func (g GitServcie) CurrentBranch() (string, error) {
 	return strings.TrimSpace(string(output)), nil
 }
 
-func (g GitServcie) AuthorName() (string, error) {
+func (g GitService) AuthorName() (string, error) {
 	cmd := exec.Command("git", "config", "user.name")
 	cmd.Dir = g.workingDir
 

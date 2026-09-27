@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGitServcie_CurrentBranch(t *testing.T) {
+func TestGitService_CurrentBranch(t *testing.T) {
 	tests := []struct {
 		name    string
 		branch  string

@@ -12,7 +12,7 @@ type App struct {
 	now        func() time.Time
 	rootDir    string
 	entryStore changelog.EntryStore
-	gitService changelog.GitServcie
+	gitService changelog.GitService
 }
 
 func NewApp(
@@ -20,7 +20,7 @@ func NewApp(
 	now func() time.Time,
 	root string,
 	entryStore changelog.EntryStore,
-	gitService changelog.GitServcie,
+	gitService changelog.GitService,
 ) *App {
 	return &App{
 		config:     config,
