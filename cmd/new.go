@@ -62,6 +62,21 @@ func NewNewCmd(app *App) *cobra.Command {
 }
 
 func addChangelogEntry(app *App, cmd *cobra.Command, state *newCmdState) error {
+	author, err := changelog.ResolveAuthor([]changelog.AuthorSource{
+		newAuthorSourceFlags(state.authorName, state.authorURL),
+		newAuthorSourceConfig(app.config.Author),
+		newAuthorSourceGit(app.gitService),
+	})
+	if err != nil {
+		switch {
+		case errors.Is(err, changelog.ErrMissingAuthorInfo):
+			output.PrintWarn("Missing author information")
+
+		default:
+			return err
+		}
+	}
+
 	groupKeys := support.SortedMapKeys(app.config.Groups)
 	typeKeys := support.SortedMapKeys(app.config.Types)
 
@@ -142,21 +157,6 @@ func addChangelogEntry(app *App, cmd *cobra.Command, state *newCmdState) error {
 	branch, err := app.gitService.CurrentBranch()
 	if err != nil {
 		return err
-	}
-
-	author, err := changelog.ResolveAuthor([]changelog.AuthorSource{
-		newAuthorSourceFlags(state.authorName, state.authorURL),
-		newAuthorSourceConfig(app.config.Author),
-		newAuthorSourceGit(app.gitService),
-	})
-	if err != nil {
-		switch {
-		case errors.Is(err, changelog.ErrMissingAuthorInfo):
-			output.PrintWarn("Missing author information")
-
-		default:
-			return err
-		}
 	}
 
 	changelogEntry := changelog.ChangelogEntry{
