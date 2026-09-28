@@ -14,11 +14,14 @@ YAML file and turn all unreleased entries into a dated release when you publish.
 ```text
 .
 ├── CHANGELOG.md
-├── .clg.yml                  # optional configuration
+├── .clg.yml                  # optional project configuration
 └── changelogs/
     └── unreleased/
         └── added-0199321f-7b2c-7c4f-bd12-4c5f8f7c2a10.yml
 ```
+
+Personal configuration can also be stored in `~/.clg.yml` in your home
+directory; project configuration overrides matching settings from that file.
 
 The files in `changelogs/unreleased/` are temporary release notes. `clg release`
 groups them by type—or by group and then type when groups are configured—inserts
@@ -63,6 +66,18 @@ types:
 
 When `groups` is configured, every entry must specify one of its keys and
 releases are rendered with group headings containing type headings.
+
+Optionally set your personal author information in `~/.clg.yml` (not in the
+version-controlled project configuration):
+
+```yaml
+author:
+  name: Jane Doe
+  url: https://example.com/jane
+```
+
+This provides your author information across projects. Without a configured
+author, `clg new` tries Git's `user.name`.
 
 Record a change. With no flags, `clg new` asks for the configured group (if any),
 type, and message:
@@ -154,12 +169,18 @@ configured, the group key is prefixed to the filename, for example
 `clg new` checks author sources in this order:
 
 1. `--author` and `--url` flags.
-2. The `author` section in `.clg.yml`.
+2. The `author` section in the merged configuration from `~/.clg.yml` and the
+   project's `.clg.yml`.
 3. Git's `user.name`, with no URL.
 
 The first non-empty, valid source supplies the complete author. Fields are not
 merged across sources: `--author "Jane Doe"` does not inherit a URL from the
-configuration. To supply both fields explicitly:
+configuration. The two configuration files are merged before author resolution,
+so they form a single source; matching project settings override global settings
+field by field. Keep personal author information in `~/.clg.yml` to avoid
+assigning one contributor's identity to everyone using the project.
+
+To supply both fields explicitly:
 
 ```sh
 clg new -t added -m "Support exporting reports" \
@@ -254,8 +275,20 @@ The heading is used when `clg release` groups entries.
 
 ## Configuration
 
-Configuration is loaded from an optional `.clg.yml` in the current working
-directory. The defaults are:
+Configuration files are loaded in this order, on top of the built-in defaults:
+
+1. `~/.clg.yml` in your home directory: global, personal settings across projects.
+2. `.clg.yml` in the current working directory: project-specific settings.
+
+Both files are optional. Project settings override matching global settings;
+settings not specified by the project retain their global or built-in values.
+Nested mappings are merged field by field, rather than replaced as a whole.
+
+Keep shared settings such as groups, change types, and the insertion marker in
+the project's `.clg.yml`, which can be committed to version control. Keep personal
+settings, especially your author name and URL, in `~/.clg.yml` instead.
+
+The built-in marker and change types are:
 
 ```yaml
 marker: "<!-- CLG -->"
@@ -280,8 +313,8 @@ groups:
   back: Backend
 ```
 
-Use `author` to configure an author for `clg new` when no author is supplied
-through flags:
+In **`~/.clg.yml`**, use `author` to configure your identity for `clg new` when
+no author is supplied through flags:
 
 ```yaml
 author:
@@ -290,8 +323,14 @@ author:
 ```
 
 The URL is optional; when present, it must be a valid HTTP or HTTPS URL and have
-an accompanying name. If both fields are empty or the section is omitted,
-`clg new` falls back to Git's `user.name`.
+an accompanying name. Avoid putting personal author information in the project's
+`.clg.yml`: it would override contributors' global settings. For example, a
+project setting only `author.name` would retain `author.url` from the global
+file, potentially combining different identities.
+
+If the merged configuration has no author name or URL, `clg new` falls back to
+Git's `user.name`. Omitting `author` from the project file does not disable an
+author configured in `~/.clg.yml`.
 
 ## Entry format
 
