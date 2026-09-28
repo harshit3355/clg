@@ -70,7 +70,7 @@ func addChangelogEntry(app *App, cmd *cobra.Command, state *newCmdState) error {
 	if err != nil {
 		switch {
 		case errors.Is(err, changelog.ErrMissingAuthorInfo):
-			output.PrintWarn("Missing author information")
+			output.PrintWarn("Warning: Missing author information!")
 
 		default:
 			return err
