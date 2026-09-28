@@ -71,7 +71,8 @@ type, and message:
 clg new
 ```
 
-For scripts or a faster workflow, provide both values directly:
+For scripts or a faster workflow, provide the type, message, and group (when
+configured) directly:
 
 ```sh
 clg new --type added --message "Support exporting reports"
@@ -137,13 +138,45 @@ clg new [flags]
 | `-g, --group` | Configured group key. If omitted, choose from an interactive list when groups are configured. |
 | `-t, --type` | Configured change type. If omitted, choose from an interactive list. |
 | `-m, --message` | Entry text. If omitted, enter it interactively. |
+| `-a, --author` | Author name. Overrides the complete author from configuration or Git. |
+| `-u, --url` | Optional author URL (HTTP or HTTPS). Requires a non-empty `--author`. |
 
-The flags can be supplied together, which makes the command non-interactive.
+Supplying the type, message, and group (when configured) makes the command
+non-interactive. Author information does not require an interactive prompt.
 `clg new` records the current Git branch in the entry, so it must be run from
 a Git working tree. The generated filename contains the type and a UUIDv7, for
 example `fixed-0199321f-7b2c-7c4f-bd12-4c5f8f7c2a10.yml`. When groups are
 configured, the group key is prefixed to the filename, for example
 `back-fixed-0199321f-7b2c-7c4f-bd12-4c5f8f7c2a10.yml`.
+
+#### Author information
+
+`clg new` checks author sources in this order:
+
+1. `--author` and `--url` flags.
+2. The `author` section in `.clg.yml`.
+3. Git's `user.name`, with no URL.
+
+The first non-empty, valid source supplies the complete author. Fields are not
+merged across sources: `--author "Jane Doe"` does not inherit a URL from the
+configuration. To supply both fields explicitly:
+
+```sh
+clg new -t added -m "Support exporting reports" \
+  -a "Jane Doe" -u "https://example.com/jane"
+```
+
+Add `--group` when groups are configured.
+
+Names and URLs are trimmed before validation. A source with both fields empty
+is skipped, including flags explicitly set to empty strings. A non-empty URL
+without a name, or an invalid URL, causes an error before any interactive
+questions; the command does not fall back to another source. Sources after the
+first valid author are not consulted.
+
+Git author lookup is best-effort: lookup errors are treated as missing author
+information. If no source supplies an author, `clg new` prints a warning and
+continues without an author. It does not ask for confirmation.
 
 ### `clg show`
 
@@ -247,21 +280,38 @@ groups:
   back: Backend
 ```
 
+Use `author` to configure an author for `clg new` when no author is supplied
+through flags:
+
+```yaml
+author:
+  name: Jane Doe
+  url: https://example.com/jane
+```
+
+The URL is optional; when present, it must be a valid HTTP or HTTPS URL and have
+an accompanying name. If both fields are empty or the section is omitted,
+`clg new` falls back to Git's `user.name`.
+
 ## Entry format
 
 Each entry is a YAML document. `clg new` writes the `title`, `type`, and current
-Git `branch`, plus `group` when groups are configured:
+Git `branch`, plus `group` when groups are configured and `author` when available:
 
 ```yaml
 group: back
 type: changed
 title: Improve report permissions
-author: Jane Doe
+author:
+  name: Jane Doe
+  url: https://example.com/jane
 branch: feature/report-export
 ```
 
-The `author` field is optional and is not set by `clg new`. The `branch` field
-is populated automatically from the current Git branch and is used by
+The `author` field is an optional mapping with `name` and an optional `url`.
+`clg new` omits `url` when no URL is supplied and omits the entire `author` field
+when no author is available. The `branch` field is populated automatically from
+the current Git branch and is used by
 `clg show --branch`. Every YAML file in `changelogs/unreleased/` must have a
 non-empty `title`, a configured `type`, and—when groups are configured—a
 configured `group`. Invalid files prevent commands that read unreleased entries
