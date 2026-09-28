@@ -55,8 +55,8 @@ func NewNewCmd(app *App) *cobra.Command {
 
 	newCmd.Flags().StringVarP(&state.message, "message", "m", "", "changelog entry")
 
-	newCmd.Flags().StringVarP(&state.authorName, "author", "a", app.config.Author.Name, "author name")
-	newCmd.Flags().StringVarP(&state.authorURL, "url", "u", app.config.Author.URL, "author URL")
+	newCmd.Flags().StringVarP(&state.authorName, "author", "a", "", "author name")
+	newCmd.Flags().StringVarP(&state.authorURL, "url", "u", "", "author URL")
 
 	return newCmd
 }
@@ -146,15 +146,16 @@ func addChangelogEntry(app *App, cmd *cobra.Command, state *newCmdState) error {
 
 	author, err := changelog.ResolveAuthor([]changelog.AuthorSource{
 		newAuthorSourceFlags(state.authorName, state.authorURL),
+		newAuthorSourceConfig(app.config.Author),
 		newAuthorSourceGit(app.gitService),
 	})
 	if err != nil {
 		switch {
-		case errors.Is(err, changelog.ErrAuthorURLInvalid):
-			return err
+		case errors.Is(err, changelog.ErrMissingAuthorInfo):
+			output.PrintWarn("Missing author information")
 
 		default:
-			// ignore
+			return err
 		}
 	}
 

@@ -39,31 +39,28 @@ func NewAuthor(name, url string) (Author, error) {
 }
 
 func ResolveAuthor(sources []AuthorSource) (Author, error) {
-	var errs []error
-
 	for _, src := range sources {
 		if src == nil {
 			continue
 		}
 
 		author, err := src.GetAuthor()
-
-		if err == nil {
-			return author, nil
+		if err != nil {
+			return Author{}, fmt.Errorf("author source %T: %w", src, err)
 		}
 
-		if errors.Is(err, ErrAuthorNameMissing) {
+		if author.IsZero() {
 			continue
 		}
 
-		errs = append(errs, fmt.Errorf("author source %T: %w", src, err))
-	}
-
-	if len(errs) > 0 {
-		return Author{}, errors.Join(errs...)
+		return author, nil
 	}
 
 	return Author{}, ErrMissingAuthorInfo
+}
+
+func (a Author) IsZero() bool {
+	return a == (Author{})
 }
 
 func (a *Author) normalize() {
@@ -72,6 +69,10 @@ func (a *Author) normalize() {
 }
 
 func (a Author) validate() error {
+	if a.IsZero() {
+		return nil
+	}
+
 	var errs []error
 
 	if a.Name == "" {

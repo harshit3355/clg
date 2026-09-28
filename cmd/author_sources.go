@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/hettiger/clg/internal/changelog"
+	"github.com/hettiger/clg/internal/config"
 )
 
 type authorSourceFlags struct {
@@ -18,6 +19,20 @@ func newAuthorSourceFlags(name, url string) authorSourceFlags {
 
 func (s authorSourceFlags) GetAuthor() (changelog.Author, error) {
 	return changelog.NewAuthor(s.name, s.url)
+}
+
+type authorSourceConfig struct {
+	config config.AuthorConfig
+}
+
+func newAuthorSourceConfig(config config.AuthorConfig) authorSourceConfig {
+	return authorSourceConfig{
+		config: config,
+	}
+}
+
+func (s authorSourceConfig) GetAuthor() (changelog.Author, error) {
+	return changelog.NewAuthor(s.config.Name, s.config.URL)
 }
 
 type gitAuthorNameReader interface {
@@ -37,7 +52,8 @@ func newAuthorSourceGit(gitService gitAuthorNameReader) authorSourceGit {
 func (s authorSourceGit) GetAuthor() (changelog.Author, error) {
 	name, err := s.gitService.AuthorName()
 	if err != nil {
-		return changelog.Author{}, err
+		// git author lookup is best-effort; ignore errors.
+		return changelog.Author{}, nil
 	}
 
 	return changelog.NewAuthor(name, "")
