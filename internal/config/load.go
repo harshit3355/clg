@@ -16,6 +16,7 @@ func Load(userHomeDir, projectDir string) (Config, error) {
 
 	v.SetDefault("marker", "<!-- CLG -->")
 	v.SetDefault("types", defaultTypes())
+	v.SetDefault("author.gitFallback", true)
 	v.SetDefault("markdown.listStyle", "-")
 
 	v.SetEnvPrefix("clg")

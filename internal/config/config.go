@@ -9,8 +9,9 @@ type Config struct {
 }
 
 type AuthorConfig struct {
-	Name string `mapstructure:"name"`
-	URL  string `mapstructure:"url"`
+	Name        string `mapstructure:"name"`
+	URL         string `mapstructure:"url"`
+	GitFallback bool   `mapstructure:"gitFallback"`
 }
 
 type MarkdownConfig struct {

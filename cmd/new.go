@@ -62,11 +62,14 @@ func NewNewCmd(app *App) *cobra.Command {
 }
 
 func addChangelogEntry(app *App, cmd *cobra.Command, state *newCmdState) error {
-	author, err := changelog.ResolveAuthor([]changelog.AuthorSource{
+	authorSources := []changelog.AuthorSource{
 		newAuthorSourceFlags(state.authorName, state.authorURL),
 		newAuthorSourceConfig(app.config.Author),
-		newAuthorSourceGit(app.gitService),
-	})
+	}
+	if app.config.Author.GitFallback {
+		authorSources = append(authorSources, newAuthorSourceGit(app.gitService))
+	}
+	author, err := changelog.ResolveAuthor(authorSources)
 	if err != nil {
 		switch {
 		case errors.Is(err, changelog.ErrMissingAuthorInfo):
