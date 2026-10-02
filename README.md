@@ -120,11 +120,11 @@ This adds a section like the following immediately after `<!-- CLG -->`:
 
 ### New Feature (1 change)
 
-- Support exporting reports
+- Support exporting reports ([Jane Doe](https://example.com/jane))
 
 ### Bug Fix (1 change)
 
-- Prevent duplicate notifications
+- Prevent duplicate notifications ([Jane Doe](https://example.com/jane))
 ```
 
 With groups configured, the release uses one additional heading level:
@@ -134,7 +134,7 @@ With groups configured, the release uses one additional heading level:
 
 #### Bug Fix (1 change)
 
-- Prevent duplicate notifications
+- Prevent duplicate notifications ([Jane Doe](https://example.com/jane))
 ```
 
 The release date is the current UTC date.
@@ -238,6 +238,19 @@ The marker must already exist in `CHANGELOG.md`. To use a different marker:
 ```sh
 clg release v1.2.0 --marker "<!-- RELEASES -->"
 ```
+
+Each release entry includes its recorded author name in parentheses when
+available. If the entry also has an author URL, the name becomes a Markdown
+link. Entries without an author name have no attribution suffix:
+
+```md
+- Support exporting reports ([Jane Doe](https://example.com/jane))
+- Prevent duplicate notifications (Jane Doe)
+- Handle empty report filters
+```
+
+This applies to both grouped and ungrouped releases. Author information comes
+from the entry files, not the configuration or Git identity at release time.
 
 If there are no unreleased entries, the command leaves the changelog unchanged.
 
