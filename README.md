@@ -77,7 +77,8 @@ author:
 ```
 
 This provides your author information across projects. Without a configured
-author, `clg new` tries Git's `user.name`.
+author, `clg new` tries Git's `user.name` by default. Set `author.gitFallback` to
+`false` to disable that fallback (see [Configuration](#configuration)).
 
 Record a change. With no flags, `clg new` asks for the configured group (if any),
 type, and message:
@@ -171,7 +172,7 @@ configured, the group key is prefixed to the filename, for example
 1. `--author` and `--url` flags.
 2. The `author` section in the merged configuration from `~/.clg.yml` and the
    project's `.clg.yml`.
-3. Git's `user.name`, with no URL.
+3. Git's `user.name`, with no URL, unless `author.gitFallback` is `false`.
 
 The first non-empty, valid source supplies the complete author. Fields are not
 merged across sources: `--author "Jane Doe"` does not inherit a URL from the
@@ -196,8 +197,10 @@ questions; the command does not fall back to another source. Sources after the
 first valid author are not consulted.
 
 Git author lookup is best-effort: lookup errors are treated as missing author
-information. If no source supplies an author, `clg new` prints a warning and
-continues without an author. It does not ask for confirmation.
+information. Set `author.gitFallback: false` in configuration to skip this
+lookup. If no source supplies an author, including when Git fallback is disabled,
+`clg new` prints a warning and continues without an author. It does not ask for
+confirmation.
 
 ### `clg show`
 
@@ -328,9 +331,24 @@ an accompanying name. Avoid putting personal author information in the project's
 project setting only `author.name` would retain `author.url` from the global
 file, potentially combining different identities.
 
-If the merged configuration has no author name or URL, `clg new` falls back to
-Git's `user.name`. Omitting `author` from the project file does not disable an
-author configured in `~/.clg.yml`.
+If neither flags nor the merged configuration supplies an author name or URL,
+`clg new` falls back to Git's `user.name` by default. To disable Git author lookup,
+set the following in `~/.clg.yml` for a personal preference or in `.clg.yml` for a
+project-wide setting:
+
+```yaml
+author:
+  gitFallback: false
+```
+
+`author.gitFallback` defaults to `true` and follows the same configuration merge
+rules: a project setting overrides the global setting. Disabling it does not
+suppress an author supplied through flags or configuration. If no author is
+available, `clg new` warns and creates the entry without one. The command still
+requires a Git working tree to record the current branch.
+
+Omitting `author` from the project file does not disable an author configured
+in `~/.clg.yml`.
 
 ## Entry format
 
