@@ -60,14 +60,14 @@ func showUnreleasedChangelogEntries(app *App, state *showCmdState) error {
 	if len(app.config.Groups) > 0 {
 		headers = append(headers, "Group")
 	}
-	headers = append(headers, "Type", "Title", "Branch")
+	headers = append(headers, "Type", "Title", "Author", "Branch")
 	rows := make([][]string, len(filteredEntries))
 	for i, entry := range filteredEntries {
 		rows[i] = []string{strconv.Itoa(i + 1)}
 		if len(app.config.Groups) > 0 {
 			rows[i] = append(rows[i], entry.Group)
 		}
-		rows[i] = append(rows[i], entry.Type, entry.Title, entry.Branch)
+		rows[i] = append(rows[i], entry.Type, entry.Title, entry.Author.Name, entry.Branch)
 	}
 
 	return output.PrintTable(headers, rows)
