@@ -210,8 +210,9 @@ Display all valid entries that have not yet been released:
 clg show
 ```
 
-The output includes the type, title, and the Git branch associated with each
-entry. Use `--branch` (or `-b`) to filter entries by branch. Group values are
+The output includes the type, title, author name, and the Git branch associated
+with each entry. The author column is empty for entries without an author.
+Use `--branch` (or `-b`) to filter entries by branch. Group values are
 shown when groups are configured and are used when generating a release. If
 there are no matching entries, `clg` reports that there is nothing to show.
 
