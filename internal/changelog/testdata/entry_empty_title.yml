@@ -1,5 +1,4 @@
 group: Fake Group
 type: changed
-author:
-    name: Fake Author
+author: Fake Author
 branch: fake-branch

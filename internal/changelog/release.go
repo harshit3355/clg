@@ -98,11 +98,8 @@ func renderTypeSectionsMarkdown(
 
 		for _, e := range groupedEntries {
 			var author string
-			switch {
-			case e.Author.Name != "" && e.Author.URL != "":
-				author = fmt.Sprintf(" ([%s](%s))", e.Author.Name, e.Author.URL)
-			case e.Author.Name != "" && e.Author.URL == "":
-				author = fmt.Sprintf(" (%s)", e.Author.Name)
+			if e.Author != "" {
+				author = " (" + e.Author + ")"
 			}
 			fmt.Fprintf(result, "\n- %s%s", e.Title, author)
 		}

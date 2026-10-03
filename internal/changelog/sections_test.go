@@ -121,12 +121,10 @@ func TestAddEntryToMatchingSection(t *testing.T) {
 			groups: testdata.Groups(),
 			types:  testdata.Types(),
 			entry: ChangelogEntry{
-				Group: "front",
-				Type:  "added",
-				Title: "Fake Title",
-				Author: ChangelogEntryAuthor{
-					Name: "Fake Author",
-				},
+				Group:  "front",
+				Type:   "added",
+				Title:  "Fake Title",
+				Author: "Fake Author",
 				Branch: "fake-branch",
 			},
 			want: []section{
@@ -144,12 +142,10 @@ func TestAddEntryToMatchingSection(t *testing.T) {
 					"Frontend",
 					[]section{
 						typeSection("added", "New Feature", ChangelogEntry{
-							Group: "front",
-							Type:  "added",
-							Title: "Fake Title",
-							Author: ChangelogEntryAuthor{
-								Name: "Fake Author",
-							},
+							Group:  "front",
+							Type:   "added",
+							Title:  "Fake Title",
+							Author: "Fake Author",
 							Branch: "fake-branch",
 						}),
 						typeSection("changed", "Feature Change"),
@@ -162,20 +158,16 @@ func TestAddEntryToMatchingSection(t *testing.T) {
 			name:  "valid without group",
 			types: testdata.Types(),
 			entry: ChangelogEntry{
-				Type:  "added",
-				Title: "Fake Title",
-				Author: ChangelogEntryAuthor{
-					Name: "Fake Author",
-				},
+				Type:   "added",
+				Title:  "Fake Title",
+				Author: "Fake Author",
 				Branch: "fake-branch",
 			},
 			want: []section{
 				typeSection("added", "New Feature", ChangelogEntry{
-					Type:  "added",
-					Title: "Fake Title",
-					Author: ChangelogEntryAuthor{
-						Name: "Fake Author",
-					},
+					Type:   "added",
+					Title:  "Fake Title",
+					Author: "Fake Author",
 					Branch: "fake-branch",
 				}),
 				typeSection("changed", "Feature Change"),
@@ -191,12 +183,10 @@ func TestAddEntryToMatchingSection(t *testing.T) {
 			name:  "unsupported group",
 			types: testdata.Types(),
 			entry: ChangelogEntry{
-				Group: "front",
-				Type:  "added",
-				Title: "Fake Title",
-				Author: ChangelogEntryAuthor{
-					Name: "Fake Author",
-				},
+				Group:  "front",
+				Type:   "added",
+				Title:  "Fake Title",
+				Author: "Fake Author",
 				Branch: "fake-branch",
 			},
 			wantErr:    true,
@@ -207,12 +197,10 @@ func TestAddEntryToMatchingSection(t *testing.T) {
 			groups: testdata.Groups(),
 			types:  testdata.Types(),
 			entry: ChangelogEntry{
-				Group: "weekend",
-				Type:  "added",
-				Title: "Fake Title",
-				Author: ChangelogEntryAuthor{
-					Name: "Fake Author",
-				},
+				Group:  "weekend",
+				Type:   "added",
+				Title:  "Fake Title",
+				Author: "Fake Author",
 				Branch: "fake-branch",
 			},
 			wantErr:    true,
@@ -222,11 +210,9 @@ func TestAddEntryToMatchingSection(t *testing.T) {
 			name:  "unknown type",
 			types: testdata.Types(),
 			entry: ChangelogEntry{
-				Type:  "special",
-				Title: "Fake Title",
-				Author: ChangelogEntryAuthor{
-					Name: "Fake Author",
-				},
+				Type:   "special",
+				Title:  "Fake Title",
+				Author: "Fake Author",
 				Branch: "fake-branch",
 			},
 			wantErr:    true,
@@ -266,12 +252,10 @@ func TestAddEntryToMatchingSection(t *testing.T) {
 			groups: testdata.Groups(),
 			types:  testdata.Types(),
 			entry: ChangelogEntry{
-				Group: "front",
-				Type:  "changed",
-				Title: "Fake Title",
-				Author: ChangelogEntryAuthor{
-					Name: "Fake Author",
-				},
+				Group:  "front",
+				Type:   "changed",
+				Title:  "Fake Title",
+				Author: "Fake Author",
 				Branch: "fake-branch",
 			},
 			wantErr:    true,

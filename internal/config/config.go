@@ -4,14 +4,8 @@ type Config struct {
 	Marker   string            `mapstructure:"marker"`
 	Groups   map[string]string `mapstructure:"groups"`
 	Types    map[string]string `mapstructure:"types"`
-	Author   AuthorConfig      `mapstructure:"author"`
+	Author   *string           `mapstructure:"author"`
 	Markdown MarkdownConfig    `mapstructure:"markdown"`
-}
-
-type AuthorConfig struct {
-	Name        string `mapstructure:"name"`
-	URL         string `mapstructure:"url"`
-	GitFallback bool   `mapstructure:"gitFallback"`
 }
 
 type MarkdownConfig struct {
