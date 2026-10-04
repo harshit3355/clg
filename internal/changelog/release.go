@@ -96,8 +96,12 @@ func renderTypeSectionsMarkdown(
 			groupCountSuffix,
 		)
 
-		for _, groupEntry := range groupedEntries {
-			fmt.Fprintf(result, "\n- %s", groupEntry.Title)
+		for _, e := range groupedEntries {
+			var author string
+			if e.Author != "" {
+				author = " (" + e.Author + ")"
+			}
+			fmt.Fprintf(result, "\n- %s%s", e.Title, author)
 		}
 	}
 }

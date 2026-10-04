@@ -16,6 +16,7 @@ type newCmdState struct {
 	changeGroup string
 	changeType  string
 	message     string
+	author      string
 }
 
 func NewNewCmd(app *App) *cobra.Command {
@@ -51,6 +52,14 @@ func NewNewCmd(app *App) *cobra.Command {
 	)
 
 	newCmd.Flags().StringVarP(&state.message, "message", "m", "", "changelog entry")
+
+	var author string
+	if app.config.Author != nil {
+		author = *app.config.Author
+	} else if name, err := app.gitService.AuthorName(); err == nil {
+		author = name
+	}
+	newCmd.Flags().StringVarP(&state.author, "author", "a", strings.TrimSpace(author), "author")
 
 	return newCmd
 }
@@ -143,6 +152,7 @@ func addChangelogEntry(app *App, cmd *cobra.Command, state *newCmdState) error {
 		Type:   state.changeType,
 		Title:  state.message,
 		Branch: branch,
+		Author: strings.TrimSpace(state.author),
 	}
 	path, err := app.entryStore.Write(changelogEntry)
 	if err != nil {

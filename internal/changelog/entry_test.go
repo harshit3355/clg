@@ -23,7 +23,6 @@ func TestNewChangelogEntry(t *testing.T) {
 			name:     "valid",
 			dataFile: "entry_valid.yml",
 			want: changelog.ChangelogEntry{
-				Group:  "",
 				Type:   "added",
 				Title:  "Fake Title",
 				Author: "Fake Author",

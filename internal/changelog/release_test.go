@@ -21,6 +21,13 @@ func TestNewRelease(t *testing.T) {
 		wantErrMsg string
 	}{
 		{
+			name:       "empty sections",
+			groups:     map[string]string{},
+			types:      map[string]string{},
+			entries:    []changelog.ChangelogEntry{},
+			wantErrMsg: "no sections available",
+		},
+		{
 			name:   "valid type",
 			groups: map[string]string{},
 			types:  testdata.Types(),
@@ -51,7 +58,6 @@ func TestNewRelease(t *testing.T) {
 			types:  testdata.Types(),
 			entries: []changelog.ChangelogEntry{
 				{
-					Type:   "",
 					Title:  "Simple Change",
 					Branch: "fake-branch",
 				},
@@ -91,7 +97,6 @@ func TestNewRelease(t *testing.T) {
 			types:  testdata.Types(),
 			entries: []changelog.ChangelogEntry{
 				{
-					Group:  "",
 					Type:   "changed",
 					Title:  "Simple Change",
 					Branch: "fake-branch",
@@ -251,6 +256,40 @@ func TestReleaseMarkdown(t *testing.T) {
 			types:       testdata.Types(),
 			time:        time.Date(2026, 9, 13, 0, 0, 0, 0, time.UTC),
 			wantFixture: "release_groups_single_change.md",
+		},
+
+		{
+			name: "single change author",
+			tag:  "v0.5.1",
+			entries: []changelog.ChangelogEntry{
+				{
+					Type:   "changed",
+					Title:  "Single Change",
+					Branch: "fake-branch",
+					Author: "Fake Author",
+				},
+			},
+			types:       testdata.Types(),
+			time:        time.Date(2026, 9, 13, 0, 0, 0, 0, time.UTC),
+			wantFixture: "release_single_change_author.md",
+		},
+
+		{
+			name: "groups single change author",
+			tag:  "v0.5.2",
+			entries: []changelog.ChangelogEntry{
+				{
+					Group:  "front",
+					Type:   "changed",
+					Title:  "Single Change",
+					Branch: "fake-branch",
+					Author: "[Fake Author](https://github.com/fake-author)",
+				},
+			},
+			groups:      testdata.Groups(),
+			types:       testdata.Types(),
+			time:        time.Date(2026, 9, 13, 0, 0, 0, 0, time.UTC),
+			wantFixture: "release_groups_single_change_author.md",
 		},
 	}
 	for _, tt := range tests {

@@ -158,7 +158,6 @@ func TestAddEntryToMatchingSection(t *testing.T) {
 			name:  "valid without group",
 			types: testdata.Types(),
 			entry: ChangelogEntry{
-				Group:  "",
 				Type:   "added",
 				Title:  "Fake Title",
 				Author: "Fake Author",
@@ -166,7 +165,6 @@ func TestAddEntryToMatchingSection(t *testing.T) {
 			},
 			want: []section{
 				typeSection("added", "New Feature", ChangelogEntry{
-					Group:  "",
 					Type:   "added",
 					Title:  "Fake Title",
 					Author: "Fake Author",
@@ -212,7 +210,6 @@ func TestAddEntryToMatchingSection(t *testing.T) {
 			name:  "unknown type",
 			types: testdata.Types(),
 			entry: ChangelogEntry{
-				Group:  "",
 				Type:   "special",
 				Title:  "Fake Title",
 				Author: "Fake Author",

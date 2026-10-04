@@ -14,11 +14,11 @@ type ChangelogEntryFile struct {
 }
 
 type ChangelogEntry struct {
-	Group  string `yaml:"group"`
-	Type   string `yaml:"type"`
-	Title  string `yaml:"title"`
-	Author string `yaml:"author"`
-	Branch string `yaml:"branch"`
+	Group  string `yaml:"group,omitempty"`
+	Type   string `yaml:"type,omitempty"`
+	Title  string `yaml:"title,omitempty"`
+	Author string `yaml:"author,omitempty"`
+	Branch string `yaml:"branch,omitempty"`
 }
 
 func NewChangelogEntry(YAMLData []byte, groupKeys, typeKeys []string) (ChangelogEntry, error) {
