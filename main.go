@@ -30,7 +30,7 @@ func main() {
 
 	location, err := time.LoadLocation(cfg.Timezone)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("invalid timezone %q: %v", cfg.Timezone, err)
 	}
 	now := func() time.Time {
 		return time.Now().In(location)

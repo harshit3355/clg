@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/spf13/viper"
 )
@@ -54,9 +53,6 @@ func Load(userHomeDir, projectDir string) (Config, error) {
 	var config Config
 	if err := v.Unmarshal(&config); err != nil {
 		return Config{}, err
-	}
-	if _, err := time.LoadLocation(config.Timezone); err != nil {
-		return Config{}, fmt.Errorf("invalid timezone %q: %w", config.Timezone, err)
 	}
 
 	return config, nil
