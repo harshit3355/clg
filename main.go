@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"time"
+	_ "time/tzdata"
 
 	"github.com/google/uuid"
 	"github.com/hettiger/clg/cmd"
@@ -27,8 +28,12 @@ func main() {
 		log.Fatal(err)
 	}
 
+	location, err := time.LoadLocation(cfg.Timezone)
+	if err != nil {
+		log.Fatal(err)
+	}
 	now := func() time.Time {
-		return time.Now().UTC()
+		return time.Now().In(location)
 	}
 
 	uuidV7 := func() (string, error) {
