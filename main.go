@@ -28,12 +28,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	location, err := time.LoadLocation(cfg.Timezone)
-	if err != nil {
-		log.Fatalf("invalid timezone %q: %v", cfg.Timezone, err)
-	}
 	now := func() time.Time {
-		return time.Now().In(location)
+		return time.Now()
 	}
 
 	uuidV7 := func() (string, error) {
