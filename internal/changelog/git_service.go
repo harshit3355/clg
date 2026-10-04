@@ -27,6 +27,8 @@ func (g GitService) CurrentBranch() (string, error) {
 	return strings.TrimSpace(string(output)), nil
 }
 
+// AuthorName returns the trimmed Git user.name value, which may be empty.
+// It returns an error if user.name is unset or the Git command fails.
 func (g GitService) AuthorName() (string, error) {
 	cmd := exec.Command("git", "config", "user.name")
 	cmd.Dir = g.workingDir
