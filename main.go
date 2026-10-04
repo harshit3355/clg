@@ -29,7 +29,7 @@ func main() {
 	}
 
 	now := func() time.Time {
-		return time.Now()
+		return time.Now().UTC()
 	}
 
 	uuidV7 := func() (string, error) {
