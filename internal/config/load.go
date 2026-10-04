@@ -29,6 +29,8 @@ func Load(userHomeDir, projectDir string) (Config, error) {
 		"author",
 		"markdown.listStyle",
 		"markdown.groupsAsList",
+		"issue.prefix",
+		"issue.pattern",
 	} {
 		if err := v.BindEnv(key); err != nil {
 			return Config{}, fmt.Errorf("bind environment variable for %q: %w", key, err)
